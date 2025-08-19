@@ -1,0 +1,108 @@
+<%- include('layout', {
+  title: title,
+  body: `
+    <div class="card">
+      <h1>Đăng nhập</h1>
+      <form id="loginForm" method="POST" action="/login" class="form">
+        <label for="employeeCode">Mã nhân viên</label>
+        <input
+          id="employeeCode"
+          name="employeeCode"
+          type="text"
+          value="${lastCode || ''}"
+          placeholder="VD: NV00123"
+          required
+          autofocus
+        />
+        <button type="submit">Gửi</button>
+      </form>
+
+      ${error ? `<p class="error">${error}</p>` : ''}
+    </div>
+  `
+}) %>
+
+<!-- <%- include('layout', {
+  title: title,
+  body: `
+    <div class="card">
+      <h1>Đăng nhập</h1>
+      <form id="loginForm" method="POST" action="/login" class="form">
+        <label for="employeeCode">Mã nhân viên</label>
+        <input
+          id="employeeCode"
+          name="employeeCode"
+          type="text"
+          value="${lastCode || ''}"
+          placeholder="VD: NV00123"
+          required
+          autofocus
+        />
+        <button type="submit">Gửi</button>
+      </form>
+
+      ${error ? `<p class="error">${error}</p>` : ''}
+
+  
+      <div id="empInfo" class="info"></div>
+    </div>
+
+    <script>
+      (function () {
+        const input = document.getElementById('employeeCode');
+        const info  = document.getElementById('empInfo');
+        let timer   = null;
+        let aborter = null;
+
+        const escapeHtml = (s='') => s.replace(/[&<>"']/g, m => ({
+          '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;', "'":'&#39;'
+        }[m]));
+
+        const render = (data) => {
+          if (!data) { info.innerHTML = ''; return; }
+          info.innerHTML = `
+            <div class="result">
+              <strong>Họ tên:</strong> ${escapeHtml(data.nameEmployer || '')}
+            </div>
+          `;
+        };
+
+        input.addEventListener('input', () => {
+          const code = input.value.trim();
+          clearTimeout(timer);
+
+          // Nếu chưa đủ 7 ký tự thì xóa kết quả cũ và hủy request
+          if (code.length !== 7) {
+            render(null);
+            if (aborter) aborter.abort();
+            return;
+          }
+
+          // Debounce 300ms để tránh gọi API liên tục khi người dùng đang gõ
+          timer = setTimeout(async () => {
+            try {
+              if (aborter) aborter.abort();
+              aborter = new AbortController();
+
+              info.innerHTML = 'Đang tải...';
+              const url = "http://10.10.99.10:8108/api/odoo/searchname?nameEmployer=" + code
+
+              // Gọi API của bạn
+              const res = await fetch(
+                url,
+                { signal: aborter.signal }
+              );
+
+              if (!res.ok) throw new Error(await res.text());
+              const data = await res.json();
+              render(data);
+            } catch (err) {
+              if (err.name === 'AbortError') return;
+              info.innerHTML = '<span class="error">Không lấy được dữ liệu</span>';
+            }
+          }, 300);
+        });
+      })();
+    </script>
+  `
+}) %> -->

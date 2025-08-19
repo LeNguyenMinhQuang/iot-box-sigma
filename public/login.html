@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' http: https: 'unsafe-inline' 'unsafe-eval'">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kiosk Login</title>
+  <style>
+    html, body { margin:0; height:100%; background:#000; font-family:Arial, sans-serif; }
+    .wrap { display:flex; align-items:center; justify-content:center; height:100%; color:#fff; flex-direction:column; }
+    input { font-size:36px; padding:12px 16px; text-align:center; width:min(90vw, 600px); border-radius:8px; border:none; outline:none; }
+    button { margin-top:24px; font-size:24px; padding:10px 20px; border-radius:8px; border:none; cursor:pointer; }
+    .msg { margin-top:18px; font-size:18px; color:#f55; min-height:24px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Quét mã nhân viên</h1>
+    <input id="code" autocomplete="off" placeholder="Scan hoặc nhập mã" />
+    <button id="btn">Đăng nhập</button>
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    const code = document.getElementById('code');
+    const btn  = document.getElementById('btn');
+    const msg  = document.getElementById('msg');
+
+    function showMessage(t, color='#f55') { msg.style.color = color; msg.textContent = t; }
+
+    async function submit() {
+      const SVNCODE = code.value.trim();
+      if (!SVNCODE) { showMessage('Vui lòng nhập/scan mã'); code.focus(); return; }
+      showMessage('Đang kiểm tra...', '#ccc');
+
+      try {
+        const r = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ SVNCODE })
+        });
+        const data = await r.json();
+        if (!data.ok) { showMessage(data.message || 'Không hợp lệ'); code.select(); return; }
+
+        // OK → chuyển sang KIOSK_URL (server trả về)
+        window.location.href = data.redirect;
+      } catch (e) {
+        showMessage('Lỗi kết nối server'); 
+      }
+    }
+
+    btn.addEventListener('click', submit);
+    code.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+
+    // auto-focus cho scanner dạng keyboard
+    window.addEventListener('load', () => { setTimeout(() => code.focus(), 200); });
+    // Scanner thường gửi nhanh → nếu bạn muốn auto-submit sau khi đủ độ dài:
+    // code.addEventListener('input', () => { if (code.value.length >= 6) submit(); });
+  </script>
+</body>
+</html>
