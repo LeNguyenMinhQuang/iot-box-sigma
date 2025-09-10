@@ -4,12 +4,13 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import authRouter from './routes/auth.routes.js';
+import usbRouter from './routes/usb.routes.js';
 
 dotenv.config();
 
 // express
 const app = express();
-const __filename = fileURLToPath(import.meta.url); 
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // view engine
@@ -23,6 +24,7 @@ app.use(express.json()); // phòng khi cần JSON
 app.use(morgan('dev'));
 
 app.use('/', authRouter);
+app.use('/usb', usbRouter);
 
 app.use((req, res) => {
   res.status(404).render('layout', {

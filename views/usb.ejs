@@ -1,0 +1,58 @@
+<div class="card">
+  <h2 style="margin-top:0">Thiết bị USB đang cắm
+    <% if (typeof compact !== 'undefined' && compact) { %>
+      <small style="font-weight:normal;color:#9aa"> (compact)</small>
+    <% } %>
+  </h2>
+
+  <p style="margin:8px 0">
+    <a href="/usb<%= compact ? '' : '?compact=1' %>">
+      <%= compact ? 'Xem đầy đủ (tất cả interface)' : 'Chế độ gọn (gộp & lọc bớt)' %>
+    </a>
+    · Xem JSON:
+    <a href="/usb/api<%= compact ? '?compact=1' : '' %>" target="_blank" rel="noopener">/usb/api</a>
+  </p>
+
+  <% if (!devices || devices.length === 0) { %>
+    <p>Không phát hiện thiết bị phù hợp.</p>
+  <% } else { %>
+    <div style="overflow:auto">
+      <table style="width:100%; border-collapse:collapse">
+        <thead>
+          <tr>
+            <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Vendor:Product</th>
+            <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Hãng</th>
+            <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Sản phẩm</th>
+            <% if (compact) { %>
+              <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Số interface</th>
+            <% } else { %>
+              <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Bus</th>
+              <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Device</th>
+              <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Serial</th>
+              <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Tốc độ</th>
+              <th style="text-align:left; border-bottom:1px solid #ddd; padding:8px">Class</th>
+            <% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% devices.forEach(d => { %>
+            <tr>
+              <td style="border-top:1px solid #eee; padding:8px"><code><%= d.vendorId %>:<%= d.productId %></code></td>
+              <td style="border-top:1px solid #eee; padding:8px"><%= d.manufacturer %></td>
+              <td style="border-top:1px solid #eee; padding:8px"><%= d.product %></td>
+              <% if (compact) { %>
+                <td style="border-top:1px solid #eee; padding:8px"><%= d.count %></td>
+              <% } else { %>
+                <td style="border-top:1px solid #eee; padding:8px"><%= d.bus %></td>
+                <td style="border-top:1px solid #eee; padding:8px"><%= d.device %></td>
+                <td style="border-top:1px solid #eee; padding:8px"><%= d.serial %></td>
+                <td style="border-top:1px solid #eee; padding:8px"><%= d.speed %></td>
+                <td style="border-top:1px solid #eee; padding:8px"><%= d.classCode %></td>
+              <% } %>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
